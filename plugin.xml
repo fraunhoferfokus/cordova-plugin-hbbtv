@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="de.fhg.fokus.famium.hbbtv" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>HbbTV</name>
+    <js-module name="HbbTV" src="www/HbbTV.js">
+        <clobbers target="cordova.plugins.HbbTV"/>
+    </js-module>
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="HbbTV">
+                <param name="android-package" value="de.fhg.fokus.famium.hbbtv"/>
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+        <source-file src="src/android/HbbTV.java" target-dir="src/de/fhg/fokus/famium/hbbtv"/>
+        <source-file src="src/android/HbbTvManager.java" target-dir="src/de/fhg/fokus/famium/hbbtv" />
+        <source-file src="src/android/ssdp/Ssdp.java" target-dir="src/de/fhg/fokus/famium/hbbtv/ssdp" />
+        <source-file src="src/android/ssdp/SsdpMessage.java" target-dir="src/de/fhg/fokus/famium/hbbtv/ssdp" />
+        <source-file src="src/android/dial/Dial.java" target-dir="src/de/fhg/fokus/famium/hbbtv/dial" />
+        <source-file src="src/android/dial/DialAppInfo.java" target-dir="src/de/fhg/fokus/famium/hbbtv/dial" />
+        <source-file src="src/android/dial/DialDevice.java" target-dir="src/de/fhg/fokus/famium/hbbtv/dial" />
+    </platform>
+</plugin>

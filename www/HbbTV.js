@@ -84,13 +84,13 @@ var HbbTVTerminalManager = function(){
 var discoverTerminals = function(onTerminalDiscovery){
     var success = function (terminals) {
         var res = [];
-        for(var appUrl in terminals){
-            var oldTerminal = discoveredTerminals[appUrl];
-            var terminal = terminals[appUrl];
-            terminal.id = appUrl;
-            var enumId = oldTerminal && oldTerminal.enumId || terminalCounter++;
-            var newTerminal = new DiscoveredTerminal(enumId, terminal.friendlyName, terminal.app2AppURL, terminal.interDevSyncURL, terminal.userAgent);
-            discoveredTerminals[appUrl] = newTerminal;
+        for(var i=0;i<terminals.length; i++){
+            var terminal = terminals[i];
+            var launchUrl = terminal.launchUrl;
+            var oldTerminal = discoveredTerminals[launchUrl];
+            var enumId = oldTerminal && oldTerminal.enum_id || terminalCounter++;
+            var newTerminal = new DiscoveredTerminal(enumId, terminal.friendlyName, terminal.X_HbbTV_App2AppURL, terminal.X_HbbTV_InterDevSyncURL, terminal.X_HbbTV_UserAgent);
+            discoveredTerminals[launchUrl] = newTerminal;
             discoveredTerminals[enumId] = terminal;
             res.push(newTerminal);
         }
@@ -121,14 +121,55 @@ var launchHbbTVApp = function(enumId,options,onHbbTVLaunch){
         onHbbTVLaunch && onHbbTVLaunch.call(null,enumId,code);
         return false;
     }
-    var success = function (code) {
+    var success = function (statusCode) {
+        onHbbTVLaunch && onHbbTVLaunch.call(null,enumId);
+    };
+    var error = function (statusCode) {
+        code = 4;
         onHbbTVLaunch && onHbbTVLaunch.call(null,enumId,code);
     };
-    var error = function (code) {
-        onHbbTVLaunch && onHbbTVLaunch.call(null,enumId,code);
-    };
-    exec(success, error, "HbbTV", "launchHbbTVApp", [terminal.id, options]);
+    var payload = createXmlLaunchRequest(options);
+    exec(success, error, "HbbTV", "launchHbbTVApp", [terminal.applicationUrl, payload]);
     return true;
+};
+
+var createXmlLaunchRequest = function(options){
+    var xml = '<?xml version="1.0" encoding="UTF-8"?> ' +
+        '<mhp:ServiceDiscovery xmlns:mhp="urn:dvb:mhp:2009" xmlns:hbb="urn:hbbtv:application_descriptor:2014" > ' +
+        '<mhp:ApplicationDiscovery DomainName="'+(options.domainName || "")+'"> ' +
+        '<mhp:ApplicationList> ' +
+        '<mhp:Application> ' +
+        '<mhp:appName Language="eng">'+(options.appName || "")+'</mhp:appName> ' +
+        '<mhp:applicationIdentifier> ' +
+        '<mhp:orgId>'+(options.orgId || "")+'</mhp:orgId> ' +
+        '<mhp:appId>'+(options.appId || "")+'</mhp:appId> ' +
+        '</mhp:applicationIdentifier> ' +
+        '<mhp:applicationDescriptor xsi:type="hbb:HbbTVApplicationDescriptor"> ' +
+        '<mhp:type> ' +
+        '<mhp:OtherApp>application/vnd.hbbtv.xhtml+xml</mhp:OtherApp> ' +
+        '</mhp:type> ' +
+        '<mhp:controlCode>AUTOSTART</mhp:controlCode> ' +
+        '<mhp:visibility>VISIBLE_ALL</mhp:visibility> ' +
+        '<mhp:serviceBound>false</mhp:serviceBound> ' +
+        '<mhp:priority>1</mhp:priority> ' +
+        '<mhp:version>01</mhp:version> ' +
+        '<mhp:mhpVersion> ' +
+        '<mhp:profile>0</mhp:profile> ' +
+        '<mhp:versionMajor>1</mhp:versionMajor> ' +
+        '<mhp:versionMinor>3</mhp:versionMinor> ' +
+        '<mhp:versionMicro>1</mhp:versionMicro> ' +
+        '</mhp:mhpVersion> ' +
+        '<hbb:ParentalRating Scheme="dvb-si" Region="'+(options.region || "")+'">'+(options.parentalRating || "")+'</hbb:ParentalRating> ' +
+        '</mhp:applicationDescriptor> ' +
+        '<mhp:applicationTransport xsi:type="mhp:HTTPTransportType"> ' +
+        '<mhp:URLBase>'+(options.appUrlBase || "")+'</mhp:URLBase> ' +
+        '</mhp:applicationTransport> ' +
+        '<mhp:applicationLocation>'+(options.appLocation || "")+'</mhp:applicationLocation> ' +
+        '</mhp:Application> ' +
+        '</mhp:ApplicationList> ' +
+        '</mhp:ApplicationDiscovery> ' +
+    '</mhp:ServiceDiscovery>';
+    return xml;
 };
 
 exports.createTerminalManager = function(){

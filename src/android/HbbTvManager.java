@@ -37,8 +37,7 @@ public class HbbTvManager{
   public static final String TAG = "HbbTvManager";
   public static final int TIMEOUT = 5000;
   private Dial mDial;
-  private Map<String, DialDevice> mHbbTvDialDevices;
-  private Map<String, DialDevice> mTmpHbbTvDialDevices;
+  private Map<String, DialAppInfo> mHbbTvTerminals;
   private DiscoverTerminalsCallback mDiscoverTerminalsCallback;
   private boolean searching = false;
   public HbbTvManager(){
@@ -47,7 +46,7 @@ public class HbbTvManager{
 
   public HbbTvManager(DiscoverTerminalsCallback discoverTerminalsCallback){
     mDiscoverTerminalsCallback = discoverTerminalsCallback;
-  };
+  }
 
   public DiscoverTerminalsCallback getDiscoverTerminalsCallback() {
     return mDiscoverTerminalsCallback;
@@ -61,11 +60,9 @@ public class HbbTvManager{
     if(!searching){
       searching = true;
       try {
-        getTmpHbbTvDialDevices().clear();
+        getHbbTvTerminals().clear();
         getDial().search(TIMEOUT);
         wait(TIMEOUT);
-        getHbbTvDialDevicesInternal().clear();
-        getHbbTvDialDevicesInternal().putAll(getTmpHbbTvDialDevices());
       }
       catch (IOException e){
         Log.e(TAG,e.getMessage(),e);
@@ -74,7 +71,6 @@ public class HbbTvManager{
         Log.e(TAG,e.getMessage(),e);
       }
       finally {
-        getTmpHbbTvDialDevices().clear();
         if (getDiscoverTerminalsCallback() != null){
           getDiscoverTerminalsCallback().onDiscoverTerminals(getLastFoundTerminals());
         }
@@ -83,22 +79,15 @@ public class HbbTvManager{
     }
   }
 
-  public synchronized Map<String, DialDevice> getLastFoundTerminals() {
-    return new HashMap<String, DialDevice>(getHbbTvDialDevicesInternal());
-  }
+  public Map<String, DialAppInfo> getLastFoundTerminals(){
+    return new HashMap<String, DialAppInfo>(getHbbTvTerminals());
+  };
 
-  private synchronized Map<String, DialDevice> getHbbTvDialDevicesInternal() {
-    if (mHbbTvDialDevices == null){
-      mHbbTvDialDevices = new HashMap<String, DialDevice>();
+  private synchronized Map<String, DialAppInfo> getHbbTvTerminals() {
+    if(mHbbTvTerminals == null ){
+      mHbbTvTerminals = new HashMap<String, DialAppInfo>();
     }
-    return mHbbTvDialDevices;
-  }
-
-  private synchronized Map<String, DialDevice> getTmpHbbTvDialDevices() {
-    if(mTmpHbbTvDialDevices == null ){
-      mTmpHbbTvDialDevices = new HashMap<String, DialDevice>();
-    }
-    return mTmpHbbTvDialDevices;
+    return mHbbTvTerminals;
   }
 
   private synchronized  Dial getDial(){
@@ -109,8 +98,8 @@ public class HbbTvManager{
           dialDevice.getAppInfo("HbbTV",new Dial.GetAppInfoCallback() {
             @Override
             public void onReceiveAppInfo(DialAppInfo appInfo) {
-              if(appInfo != null && dialDevice.getApp2AppUrl() != null){
-                getTmpHbbTvDialDevices().put(dialDevice.getUDN(),dialDevice);
+              if(appInfo != null /*&& appInfo.getAdditionalData("X_HbbTV_App2AppURL") != null*/){
+                getHbbTvTerminals().put(dialDevice.getApplicationUrl(),appInfo);
               }
             }
           });
@@ -121,6 +110,6 @@ public class HbbTvManager{
   }
 
   public interface DiscoverTerminalsCallback {
-    public void onDiscoverTerminals(Map<String,DialDevice> terminals);
+    public void onDiscoverTerminals(Map<String,DialAppInfo> terminals);
   }
 }

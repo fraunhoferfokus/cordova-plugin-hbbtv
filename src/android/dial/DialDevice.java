@@ -54,13 +54,14 @@ public class DialDevice {
   private String mModelName;
   private String mUDN;
   private String mPresentationUrl;
-  private String mApp2AppUrl;
 
   public DialDevice(String descriptionUrl, SsdpMessage ssdpMessage){
     mDescriptionUrl = descriptionUrl;
     mSsdpMessage = ssdpMessage;
   }
-
+  public DialDevice(String applicationUrl){
+    mApplicationUrl = applicationUrl;
+  }
   public SsdpMessage getSsdpMessage() {
     return mSsdpMessage;
   }
@@ -90,6 +91,9 @@ public class DialDevice {
   }
 
   public void setApplicationUrl(String mApplicationUrl) {
+    if (mApplicationUrl != null && !mApplicationUrl.endsWith("/")){
+      mApplicationUrl = mApplicationUrl+"/";
+    }
     this.mApplicationUrl = mApplicationUrl;
   }
 
@@ -157,14 +161,6 @@ public class DialDevice {
     this.mPresentationUrl = mPresentationUrl;
   }
 
-  public String getApp2AppUrl() {
-    return mApp2AppUrl;
-  }
-
-  public void setApp2AppUrl(String mApp2AppUrl) {
-    this.mApp2AppUrl = mApp2AppUrl;
-  }
-
   public void getAppInfo(String appName, Dial.GetAppInfoCallback getAppInfoCallback){
     if(getApplicationUrl() != null){
       DialAppInfo appInfo = new DialAppInfo(this,appName);
@@ -173,13 +169,17 @@ public class DialDevice {
   }
 
   public void launchApp(String appName, String launchData, String contentType, Dial.LaunchAppCallback launchAppCallback){
-    String appUrl = getApplicationUrl()+appName;
-    new LaunchAppTask(launchAppCallback).execute(appUrl, launchData, contentType);
+    if(getApplicationUrl() != null){
+      String appUrl = getApplicationUrl()+appName;
+      new LaunchAppTask(launchAppCallback).execute(appUrl, launchData, contentType);
+    }
   }
 
   public void stopApp(String appName, String runId, Dial.StopAppCallback stopAppCallback){
-    String stopUrl = getApplicationUrl()+appName+"/"+runId;
-    new StopAppTask(stopAppCallback).execute(stopUrl);
+    if(getApplicationUrl() != null){
+      String stopUrl = getApplicationUrl()+appName+"/"+runId;
+      new StopAppTask(stopAppCallback).execute(stopUrl);
+    }
   }
 
   private class DownloadAppInfoTask extends AsyncTask<DialAppInfo, Void, DialAppInfo> {
@@ -246,7 +246,7 @@ public class DialDevice {
 
     private void readAppInfo(XmlPullParser parser, DialAppInfo appInfo) throws XmlPullParserException, IOException{
       parser.require(XmlPullParser.START_TAG, ns, "service");
-      Log.d(TAG, "XML parser "+parser.getName());
+      Log.d(TAG, "XML parser " + parser.getName());
       while (parser.next() != XmlPullParser.END_TAG) {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
           continue;
@@ -269,12 +269,34 @@ public class DialDevice {
           if (runId != null)
             appInfo.setRunId(runId);
         }
+        else if(name.equals("additionalData")){
+          readAppInfoAdditionalData(parser,appInfo);
+        }
         else {
           skip(parser);
         }
       }
     }
 
+    private void readAppInfoAdditionalData(XmlPullParser parser, DialAppInfo appInfo) throws XmlPullParserException, IOException{
+      parser.require(XmlPullParser.START_TAG, ns, "additionalData");
+      Log.d(TAG, "XML parser "+parser.getName());
+      while (parser.next() != XmlPullParser.END_TAG) {
+        if (parser.getEventType() != XmlPullParser.START_TAG) {
+          continue;
+        }
+        try {
+          String name = parser.getName();
+          Log.d(TAG, "XML parser current element"+name);
+          String value = readText(parser, name);
+          appInfo.getAdditionalData().put(name,value);
+        }
+        catch (Exception e){
+          Log.e(TAG,e.getMessage(),e);
+        }
+
+      }
+    }
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
       if (parser.getEventType() != XmlPullParser.START_TAG) {
         throw new IllegalStateException();

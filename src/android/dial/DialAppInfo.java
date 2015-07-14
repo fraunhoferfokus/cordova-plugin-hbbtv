@@ -20,6 +20,9 @@
  ******************************************************************************/
 package de.fhg.fokus.famium.hbbtv.dial;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by lba on 22/04/15.
  */
@@ -30,7 +33,7 @@ public class DialAppInfo {
   private Boolean mAllowStop;
   private String mState;
   private String runId;
-
+  private Map<String,String> mAdditionalData;
   public DialAppInfo(DialDevice dialDevice, String name){
     mDialDevice = dialDevice;
     mName = name;
@@ -74,5 +77,16 @@ public class DialAppInfo {
 
   public void setRunId(String runId) {
     this.runId = runId;
+  }
+
+  public synchronized Map<String, String> getAdditionalData() {
+    if(mAdditionalData == null){
+      mAdditionalData = new HashMap<String, String>();
+    }
+    return mAdditionalData;
+  }
+
+  public String getAdditionalData(String name){
+    return getAdditionalData().get(name);
   }
 }

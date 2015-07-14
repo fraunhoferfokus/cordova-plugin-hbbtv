@@ -20,17 +20,22 @@
  ******************************************************************************/
 package de.fhg.fokus.famium.hbbtv;
 
+import android.util.Log;
+
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.fhg.fokus.famium.hbbtv.dial.Dial;
+import de.fhg.fokus.famium.hbbtv.dial.DialAppInfo;
 import de.fhg.fokus.famium.hbbtv.dial.DialDevice;
 
 /**
@@ -57,7 +62,27 @@ public class HbbTV extends CordovaPlugin {
     return true;
   }
 
-  private boolean launchHbbTVApp(JSONArray args, CallbackContext callbackContext) {
+  private boolean launchHbbTVApp(JSONArray args, final CallbackContext callbackContext) {
+    try{
+      String applicationUrl = args.getString(0);
+      String payload = args.getString(1);
+      DialDevice dialDevice = new DialDevice(applicationUrl);
+      dialDevice.launchApp("HbbTV", payload, "text/plain", new Dial.LaunchAppCallback() {
+        @Override
+        public void onLaunchApp(Integer statusCode) {
+          if(statusCode != null && statusCode>=200 && statusCode<300){
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK,statusCode));
+          }
+          else {
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR,statusCode));
+          }
+        }
+      });
+    }
+    catch (Exception e){
+      Log.e(TAG,e.getMessage(),e);
+      callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR,500));
+    }
     return true;
   }
 
@@ -65,23 +90,26 @@ public class HbbTV extends CordovaPlugin {
     if (hbbTvManager == null){
       hbbTvManager = new HbbTvManager(new HbbTvManager.DiscoverTerminalsCallback() {
         @Override
-        public void onDiscoverTerminals(Map<String, DialDevice> terminals) {
+        public void onDiscoverTerminals(Map<String, DialAppInfo> terminals) {
           synchronized (HbbTV.this){
             JSONArray arr = new JSONArray();
-            for (DialDevice terminal: terminals.values()){
+            for (DialAppInfo terminal: terminals.values()){
+              DialDevice device = terminal.getDialDevice();
               HashMap<String,Object> copy = new HashMap<String,Object>();
-              copy.put("descriptionUrl",terminal.getDescriptionUrl());
-              copy.put("applicationUrl",terminal.getApplicationUrl());
-              copy.put("usn",terminal.getUSN());
-              copy.put("type",terminal.getType());
-              copy.put("friendlyName",terminal.getFriendlyName());
-              copy.put("manufacturer",terminal.getManufacturer());
-              copy.put("manufacturerUrl",terminal.getManufacturerUrl());
-              copy.put("modelDescription",terminal.getModelDescription());
-              copy.put("modelName",terminal.getModelName());
-              copy.put("udn",terminal.getUDN());
-              copy.put("app2AppUrl",terminal.getApp2AppUrl());
-              arr.put(copy);
+              copy.put("descriptionUrl",device.getDescriptionUrl());
+              copy.put("launchUrl",device.getApplicationUrl()+"/HbbTV");
+              copy.put("applicationUrl",device.getApplicationUrl());
+              copy.put("usn",device.getUSN());
+              copy.put("type",device.getType());
+              copy.put("friendlyName",device.getFriendlyName());
+              copy.put("manufacturer",device.getManufacturer());
+              copy.put("manufacturerUrl",device.getManufacturerUrl());
+              copy.put("modelDescription",device.getModelDescription());
+              copy.put("modelName",device.getModelName());
+              copy.put("udn",device.getUDN());
+              copy.put("state",terminal.getState());
+              copy.putAll(terminal.getAdditionalData());
+              arr.put(new JSONObject(copy));
             }
             for (CallbackContext callbackContext: getPendingDiscoveryRequests()){
               if (callbackContext != null){

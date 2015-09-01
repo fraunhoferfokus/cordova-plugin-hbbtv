@@ -135,7 +135,7 @@ var launchHbbTVApp = function(enumId,options,onHbbTVLaunch){
 
 var createXmlLaunchRequest = function(options){
     var xml = '<?xml version="1.0" encoding="UTF-8"?> ' +
-        '<mhp:ServiceDiscovery xmlns:mhp="urn:dvb:mhp:2009" xmlns:hbb="urn:hbbtv:application_descriptor:2014" > ' +
+        '<mhp:ServiceDiscovery xmlns:mhp="urn:dvb:mhp:2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hbb="urn:hbbtv:application_descriptor:2014" > ' +
         '<mhp:ApplicationDiscovery DomainName="'+(options.domainName || "")+'"> ' +
         '<mhp:ApplicationList> ' +
         '<mhp:Application> ' +
@@ -159,7 +159,7 @@ var createXmlLaunchRequest = function(options){
         '<mhp:versionMinor>3</mhp:versionMinor> ' +
         '<mhp:versionMicro>1</mhp:versionMicro> ' +
         '</mhp:mhpVersion> ' +
-        '<hbb:ParentalRating Scheme="dvb-si" Region="'+(options.region || "")+'">'+(options.parentalRating || "")+'</hbb:ParentalRating> ' +
+        (options.parentalRating && '<hbb:ParentalRating Scheme="dvb-si" Region="'+(options.region || "")+'">'+options.parentalRating+'</hbb:ParentalRating> ') || ''+
         '</mhp:applicationDescriptor> ' +
         '<mhp:applicationTransport xsi:type="mhp:HTTPTransportType"> ' +
         '<mhp:URLBase>'+(options.appUrlBase || "")+'</mhp:URLBase> ' +

@@ -1,0 +1,39 @@
+{
+  "name": "cordova-plugin-hbbtv",
+  "version": "0.0.1",
+  "description": "This Cordova HbbTV plugin implements the HbbTV 2.0 CS APIs for discovering HbbTV Terminals, launching HbbTV Applications on discovered Terminals and open App2App communication channels between the Cordova App (Companion App) and the launched HbbTV App using WebSockets",
+  "cordova": {
+    "id": "de.fhg.fokus.famium.hbbtv",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fraunhoferfokus/cordova-plugin-hbbtv"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova",
+    "hbbtv",
+    "hbbtv 2.0",
+    "cs",
+    "companion screen",
+    "dial",
+    "app2app",
+    "discovery",
+    "launch"
+  ],
+  "bugs": {
+    "url" : "https://github.com/fraunhoferfokus/cordova-plugin-hbbtv/issues",
+    "email" : "louay.bassbouss@fokus.fraunhofer.de"
+  },
+  "homepage": "https://www.fokus.fraunhofer.de/fame",
+  "author": {
+    "name": "Louay Bassbouss",
+    "email" : "louay.bassbouss@fokus.fraunhofer.de",
+    "url" : "https://www.fokus.fraunhofer.de/usr/bassbouss"
+  },
+  "license": "LGPL-3.0"
+}

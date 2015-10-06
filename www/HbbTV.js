@@ -1,7 +1,7 @@
 
 /*******************************************************************************
  *
- * Copyright (c) 2015 Louay Bassbouss, Fraunhofer FOKUS, All rights reserved.
+ * Copyright (c) 2015 Fraunhofer FOKUS, All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -159,7 +159,7 @@ var createXmlLaunchRequest = function(options){
         '<mhp:versionMinor>3</mhp:versionMinor> ' +
         '<mhp:versionMicro>1</mhp:versionMicro> ' +
         '</mhp:mhpVersion> ' +
-        (options.parentalRating && '<hbb:ParentalRating Scheme="dvb-si" Region="'+(options.region || "")+'">'+options.parentalRating+'</hbb:ParentalRating> ') || ''+
+        (options.parentalRating && ('<hbb:ParentalRating Scheme="dvb-si" Region="'+(options.region || "")+'">'+options.parentalRating+'</hbb:ParentalRating> ') || ' ')+
         '</mhp:applicationDescriptor> ' +
         '<mhp:applicationTransport xsi:type="mhp:HTTPTransportType"> ' +
         '<mhp:URLBase>'+(options.appUrlBase || "")+'</mhp:URLBase> ' +

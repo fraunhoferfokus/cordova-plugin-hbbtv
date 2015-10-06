@@ -23,17 +23,20 @@
 
 # de.fhg.fokus.famium.hbbtv
 
-This plugin provides an API that implements the client functionalities of the HbbTV 2.0 Companion Screen features:
+This plugin provides an API that implements the client features of the HbbTV 2.0 CS Spec:
  * It allows Cordova applications to discover HbbTV Terminals
  * It allows Cordova applications to launch HbbTV Apps on discovered terminals
  * It allows to create App2App communication channel between the Cordova App (Companion App) and the HbbTV App using WebSockets
 
+Please refer to the [HbbTV 2.0 Spec document -> section 14 about Companion Screen][hbbtv20spec] for more details.
+
 ## Installation
 
-`cordova plugin add de.fhg.fokus.famium.hbbtv`
+use the following cordova command to add the plugin to your Cordova App
 
-Note: After installation the plugin is available to the Cordova application
-when the `deviceready` event has been fired. Before this event has not been fired, there is not guarantee on the availability of this plugin.
+```
+cordova plugin add de.fhg.fokus.famium.hbbtv
+```
 
 ## Supported Platforms
 
@@ -49,6 +52,12 @@ Currently no known.
 Currently no known.
 
 ## API
+
+The API features are described in the following subsections.
+
+Note: After installation the plugin is available to the Cordova application when the `deviceready` event has been fired.
+Before this event has not been fired, there is not guarantee on the availability of this plugin. The namespace of the plugin
+is `hbbtv`.
 
 ### Create `HbbTVTerminalManager`
 

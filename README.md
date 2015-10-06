@@ -1,9 +1,9 @@
 
 # de.fhg.fokus.famium.hbbtv
 
-Project website: [Cordova HbbTV Plugin](http://fraunhoferfokus.github.io/cordova-plugin-hbbtv/)
+Project website: [Cordova HbbTV Plugin](https://github.com/fraunhoferfokus/cordova-plugin-hbbtv/)
 
-Sample app using this plugin: [HelloApp](http://fraunhoferfokus.github.io/cordova-plugin-hbbtv-helloapp/)
+Sample app using this plugin: [HelloApp](https://github.com/fraunhoferfokus/cordova-plugin-hbbtv-helloapp/)
 
 Plugin documentation: [doc/index.md](doc/index.md)
 

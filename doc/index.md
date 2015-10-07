@@ -41,7 +41,7 @@ cordova plugin add cordova-plugin-hbbtv
 or add the following line to `config.xml` of your Cordova App to install the plugin automatically after adding a platform e.g. `cordova platform add android`:
 
 ```xml
-<plugin name="cordova-plugin-hbbtv" version="0.0.1"/>
+<plugin name="cordova-plugin-hbbtv" version="0.0.2"/>
 ```
 
 NOTE: the plugin can be also installed directly from this GitHub repository using:

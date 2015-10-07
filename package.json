@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-hbbtv",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This Cordova HbbTV plugin implements the HbbTV 2.0 CS APIs for discovering HbbTV Terminals, launching HbbTV Applications on discovered Terminals and open App2App communication channels between the Cordova App (Companion App) and the launched HbbTV App using WebSockets",
   "cordova": {
     "id": "de.fhg.fokus.famium.hbbtv",

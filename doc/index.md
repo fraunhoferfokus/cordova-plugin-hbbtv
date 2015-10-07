@@ -35,7 +35,7 @@ Please refer to the [HbbTV 2.0 Spec document -> section 14 about Companion Scree
 use the following cordova command to add the plugin to your Cordova App
 
 ```
-cordova plugin add de.fhg.fokus.famium.hbbtv
+cordova plugin add cordova-plugin-hbbtv
 ```
 
 ## Supported Platforms
@@ -115,6 +115,8 @@ The following example demonstrates the API calls needed to launch a HbbTV App on
 ```javascript
 var terminal = ...; // terminal is set after discovery is completed
 var enumId = terminal.enum_id; // terminal can be set after discovery is completed.
+var APP_URL_BASE = "http://fraunhoferfokus.github.io/node-hbbtv/www/hbbtv-app.html";
+var APP_LOCATION = "?channel=myChannel";
 var options = {
   domainName: $DOMAIN_NAME$, // used for <mhp:ApplicationDiscovery DomainName="$DOMAIN_NAME$">. Default is an empty String
   appName: $APP_NAME$, // used for <mhp:appName Language="eng">$APP_NAME$</mhp:appName>. Default is an empty String
@@ -122,8 +124,8 @@ var options = {
   appId: $APP_ID$, // used for <mhp:appId>$APP_ID$</mhp:appId>. Default is an empty String
   parentalRating: $PARENTAL_RATING$, // used for <hbb:ParentalRating>$PARENTAL_RATING$</hbb:ParentalRating>. <hbb:ParentalRating> element is created only if region is defined and not empty.
   region: $REGION$, // used for  <hbb:ParentalRating Region="$REGION$">. Default is an empty String
-  appUrlBase: $APP_URL_BASE$, // used for <mhp:URLBase>$APP_URL_BASE$</mhp:URLBase>. Default is an empty String
-  appLocation: $APP_LOCATION$, // used for <mhp:applicationLocation>$APP_LOCATION$</mhp:applicationLocation>. Default is an empty String
+  appUrlBase: APP_URL_BASE, // used for <mhp:URLBase>$APP_URL_BASE$</mhp:URLBase>. Default is an empty String
+  appLocation: APP_LOCATION, // used for <mhp:applicationLocation>$APP_LOCATION$</mhp:applicationLocation>. Default is an empty String
 };
 hbbtvTerminalManager.launchHbbTVApp(enumId,options,function (enumId, errorCode) {
   if(errorCode){

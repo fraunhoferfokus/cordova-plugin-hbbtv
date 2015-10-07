@@ -21,7 +21,7 @@
  */
 -->
 
-# de.fhg.fokus.famium.hbbtv
+# cordova-plugin-hbbtv
 
 This plugin provides an API that implements the client features of the HbbTV 2.0 CS Spec:
  * It allows Cordova applications to discover HbbTV Terminals
@@ -32,10 +32,28 @@ Please refer to the [HbbTV 2.0 Spec document -> section 14 about Companion Scree
 
 ## Installation
 
-use the following cordova command to add the plugin to your Cordova App
+use the following cordova command to add the plugin to your Cordova App from npm:
 
 ```
 cordova plugin add cordova-plugin-hbbtv
+```
+
+or add the following line to `config.xml` of your Cordova App to install the plugin automatically after adding a platform e.g. `cordova platform add android`:
+
+```xml
+<plugin name="cordova-plugin-hbbtv" version="0.0.1"/>
+```
+
+NOTE: the plugin can be also installed directly from this GitHub repository using:
+
+```
+cordova plugin add https://github.com/fraunhoferfokus/cordova-plugin-hbbtv.git
+```
+
+to remove the plugin use the following command:
+
+```
+cordova plugin remove de.fhg.fokus.famium.hbbtv
 ```
 
 ## Supported Platforms

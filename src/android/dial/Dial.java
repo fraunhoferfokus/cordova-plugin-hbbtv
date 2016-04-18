@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import de.fhg.fokus.famium.hbbtv.ssdp.Ssdp;
 import de.fhg.fokus.famium.hbbtv.ssdp.SsdpMessage;
@@ -48,6 +50,8 @@ public class Dial {
   private DeviceFoundCallback mDeviceFoundCallback;
   private Ssdp.SsdpCallback mSsdpCallback;
   private Ssdp mSsdp;
+
+  private Executor mExecutor = Executors.newCachedThreadPool();
 
   public Dial(DeviceFoundCallback deviceFoundCallback){
     mDeviceFoundCallback = deviceFoundCallback;
@@ -99,8 +103,9 @@ public class Dial {
 
   private void getDialDevice(String deviceDescriptionUrl, SsdpMessage ssdpMessage){
     DialDevice device = new DialDevice(deviceDescriptionUrl, ssdpMessage);
+    device.setExecutor(mExecutor);
     device.setUSN(ssdpMessage.get("USN"));
-    new DownloadDeviceDescriptionTask().execute(device);
+    new DownloadDeviceDescriptionTask().executeOnExecutor(mExecutor, device);
   }
 
   public interface DeviceFoundCallback {

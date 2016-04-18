@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.Executor;
 
 import de.fhg.fokus.famium.hbbtv.ssdp.SsdpMessage;
 
@@ -54,6 +55,7 @@ public class DialDevice {
   private String mModelName;
   private String mUDN;
   private String mPresentationUrl;
+  private Executor mExecutor = AsyncTask.SERIAL_EXECUTOR;
 
   public DialDevice(String descriptionUrl, SsdpMessage ssdpMessage){
     mDescriptionUrl = descriptionUrl;
@@ -164,22 +166,26 @@ public class DialDevice {
   public void getAppInfo(String appName, Dial.GetAppInfoCallback getAppInfoCallback){
     if(getApplicationUrl() != null){
       DialAppInfo appInfo = new DialAppInfo(this,appName);
-      new DownloadAppInfoTask(getAppInfoCallback).execute(appInfo);
+      new DownloadAppInfoTask(getAppInfoCallback).executeOnExecutor(mExecutor, appInfo);
     }
   }
 
   public void launchApp(String appName, String launchData, String contentType, Dial.LaunchAppCallback launchAppCallback){
     if(getApplicationUrl() != null){
       String appUrl = getApplicationUrl()+appName;
-      new LaunchAppTask(launchAppCallback).execute(appUrl, launchData, contentType);
+      new LaunchAppTask(launchAppCallback).executeOnExecutor(mExecutor, appUrl, launchData, contentType);
     }
   }
 
   public void stopApp(String appName, String runId, Dial.StopAppCallback stopAppCallback){
     if(getApplicationUrl() != null){
       String stopUrl = getApplicationUrl()+appName+"/"+runId;
-      new StopAppTask(stopAppCallback).execute(stopUrl);
+      new StopAppTask(stopAppCallback).executeOnExecutor(mExecutor, stopUrl);
     }
+  }
+
+  public void setExecutor(Executor executor) {
+    mExecutor = executor;
   }
 
   private class DownloadAppInfoTask extends AsyncTask<DialAppInfo, Void, DialAppInfo> {

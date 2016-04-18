@@ -62,6 +62,7 @@ public class HbbTvManager{
   public synchronized void discoverTerminals(){
     if(!searching){
       searching = true;
+      Log.d(TAG, "discoverTerminals: start searching");
       try {
         getHbbTvTerminals().clear();
         getDial().search(TIMEOUT);
@@ -73,6 +74,7 @@ public class HbbTvManager{
         @Override
         public void run() {
           synchronized(HbbTvManager.this) {
+            Log.d(TAG, "discoverTerminals: stop searching");
             if (getDiscoverTerminalsCallback() != null){
               getDiscoverTerminalsCallback().onDiscoverTerminals(getLastFoundTerminals());
             }
@@ -99,9 +101,11 @@ public class HbbTvManager{
       mDial = new Dial(new Dial.DeviceFoundCallback() {
         @Override
         public void onDialDeviceFound(final DialDevice dialDevice) {
+          Log.d(TAG, "onDialDeviceFound: " + dialDevice.getApplicationUrl());
           dialDevice.getAppInfo("HbbTV",new Dial.GetAppInfoCallback() {
             @Override
             public void onReceiveAppInfo(DialAppInfo appInfo) {
+              Log.d(TAG, "onReceiveAppInfo: " + dialDevice.getApplicationUrl() + ", " + appInfo);
               if(appInfo != null /*&& appInfo.getAdditionalData("X_HbbTV_App2AppURL") != null*/){
                 getHbbTvTerminals().put(dialDevice.getApplicationUrl(),appInfo);
               }

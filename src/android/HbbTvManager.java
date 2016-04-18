@@ -21,6 +21,7 @@
 package de.fhg.fokus.famium.hbbtv;
 
 import android.util.Log;
+import android.os.Handler;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -40,12 +41,14 @@ public class HbbTvManager{
   private Map<String, DialAppInfo> mHbbTvTerminals;
   private DiscoverTerminalsCallback mDiscoverTerminalsCallback;
   private boolean searching = false;
+  private Handler mHandler;
   public HbbTvManager(){
 
   };
 
   public HbbTvManager(DiscoverTerminalsCallback discoverTerminalsCallback){
     mDiscoverTerminalsCallback = discoverTerminalsCallback;
+    mHandler = new Handler();
   }
 
   public DiscoverTerminalsCallback getDiscoverTerminalsCallback() {
@@ -62,20 +65,21 @@ public class HbbTvManager{
       try {
         getHbbTvTerminals().clear();
         getDial().search(TIMEOUT);
-        wait(TIMEOUT);
       }
       catch (IOException e){
         Log.e(TAG,e.getMessage(),e);
       }
-      catch (InterruptedException e){
-        Log.e(TAG,e.getMessage(),e);
-      }
-      finally {
-        if (getDiscoverTerminalsCallback() != null){
-          getDiscoverTerminalsCallback().onDiscoverTerminals(getLastFoundTerminals());
+      mHandler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          synchronized(HbbTvManager.this) {
+            if (getDiscoverTerminalsCallback() != null){
+              getDiscoverTerminalsCallback().onDiscoverTerminals(getLastFoundTerminals());
+            }
+            searching = false;
+          }
         }
-        searching = false;
-      }
+      }, TIMEOUT);
     }
   }
 

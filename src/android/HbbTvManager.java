@@ -21,6 +21,7 @@
 package de.fhg.fokus.famium.hbbtv;
 
 import android.util.Log;
+import android.os.Handler;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -40,12 +41,14 @@ public class HbbTvManager{
   private Map<String, DialAppInfo> mHbbTvTerminals;
   private DiscoverTerminalsCallback mDiscoverTerminalsCallback;
   private boolean searching = false;
+  private Handler mHandler;
   public HbbTvManager(){
 
   };
 
   public HbbTvManager(DiscoverTerminalsCallback discoverTerminalsCallback){
     mDiscoverTerminalsCallback = discoverTerminalsCallback;
+    mHandler = new Handler();
   }
 
   public DiscoverTerminalsCallback getDiscoverTerminalsCallback() {
@@ -59,23 +62,26 @@ public class HbbTvManager{
   public synchronized void discoverTerminals(){
     if(!searching){
       searching = true;
+      Log.d(TAG, "discoverTerminals: start searching");
       try {
         getHbbTvTerminals().clear();
         getDial().search(TIMEOUT);
-        wait(TIMEOUT);
       }
       catch (IOException e){
         Log.e(TAG,e.getMessage(),e);
       }
-      catch (InterruptedException e){
-        Log.e(TAG,e.getMessage(),e);
-      }
-      finally {
-        if (getDiscoverTerminalsCallback() != null){
-          getDiscoverTerminalsCallback().onDiscoverTerminals(getLastFoundTerminals());
+      mHandler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          synchronized(HbbTvManager.this) {
+            Log.d(TAG, "discoverTerminals: stop searching");
+            if (getDiscoverTerminalsCallback() != null){
+              getDiscoverTerminalsCallback().onDiscoverTerminals(getLastFoundTerminals());
+            }
+            searching = false;
+          }
         }
-        searching = false;
-      }
+      }, TIMEOUT);
     }
   }
 
@@ -95,9 +101,11 @@ public class HbbTvManager{
       mDial = new Dial(new Dial.DeviceFoundCallback() {
         @Override
         public void onDialDeviceFound(final DialDevice dialDevice) {
+          Log.d(TAG, "onDialDeviceFound: " + dialDevice.getApplicationUrl());
           dialDevice.getAppInfo("HbbTV",new Dial.GetAppInfoCallback() {
             @Override
             public void onReceiveAppInfo(DialAppInfo appInfo) {
+              Log.d(TAG, "onReceiveAppInfo: " + dialDevice.getApplicationUrl() + ", " + appInfo);
               if(appInfo != null /*&& appInfo.getAdditionalData("X_HbbTV_App2AppURL") != null*/){
                 getHbbTvTerminals().put(dialDevice.getApplicationUrl(),appInfo);
               }

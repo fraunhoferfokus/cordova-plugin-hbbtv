@@ -74,7 +74,11 @@ public class HbbTV extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK,statusCode));
           }
           else {
-            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR,statusCode));
+            int status = 500;
+            if (statusCode != null) {
+              status = statusCode.intValue();
+            }
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR,status));
           }
         }
       });

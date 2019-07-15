@@ -57,7 +57,7 @@ public class SsdpMessage {
       line = lines[i].trim();
       int index = line.indexOf(":");
       if (index>0) {
-        String key = line.substring(0, index).trim();
+        String key = line.substring(0, index).trim().toUpperCase();
         String value = line.substring(index+1).trim();
         getHeaders().put(key, value);
       }

@@ -170,10 +170,10 @@ public class DialDevice {
     }
   }
 
-  public void launchApp(String appName, String launchData, String contentType, Dial.LaunchAppCallback launchAppCallback){
+  public void launchApp(String appName, String launchData, String contentType, int timeout, Dial.LaunchAppCallback launchAppCallback){
     if(getApplicationUrl() != null){
       String appUrl = getApplicationUrl()+appName;
-      new LaunchAppTask(launchAppCallback).executeOnExecutor(mExecutor, appUrl, launchData, contentType);
+      new LaunchAppTask(launchAppCallback).executeOnExecutor(mExecutor, appUrl, launchData, contentType, Integer.toString(timeout));
     }
   }
 
@@ -378,7 +378,8 @@ public class DialDevice {
         String appUrl = params[0];
         String launchData = params[1];
         String contentType = params[2];
-        return postLaunchRequest(appUrl, launchData, contentType);
+        int timeout = Integer.parseInt(params[3]);
+        return postLaunchRequest(appUrl, launchData, contentType, timeout);
       } catch (Exception e) {
         Log.e(TAG, e.getMessage(), e);
         return null;
@@ -392,11 +393,11 @@ public class DialDevice {
       }
     }
 
-    private Integer postLaunchRequest(String appUrl, String launchData, String contentType) throws IOException {
+    private Integer postLaunchRequest(String appUrl, String launchData, String contentType, int timeout) throws IOException {
       URL url = new URL(appUrl);
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setReadTimeout(10000 /* milliseconds */);
-      conn.setConnectTimeout(15000 /* milliseconds */);
+      conn.setReadTimeout(timeout /* milliseconds */);
+      conn.setConnectTimeout(timeout /* milliseconds */);
       conn.setRequestMethod("POST");
       conn.setDoInput(true);
       conn.setDoOutput(true);

@@ -66,8 +66,9 @@ public class HbbTV extends CordovaPlugin {
     try{
       String applicationUrl = args.getString(0);
       String payload = args.getString(1);
+      JSONObject options = args.getJSONObject(2);
       DialDevice dialDevice = new DialDevice(applicationUrl);
-      dialDevice.launchApp("HbbTV", payload, "text/plain", new Dial.LaunchAppCallback() {
+      dialDevice.launchApp("HbbTV", payload, "text/plain", options.getInt("timeout"), new Dial.LaunchAppCallback() {
         @Override
         public void onLaunchApp(Integer statusCode) {
           if(statusCode != null && statusCode>=200 && statusCode<300){

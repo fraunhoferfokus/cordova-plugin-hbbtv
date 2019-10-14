@@ -66,7 +66,7 @@ public class HbbTV extends CordovaPlugin {
     try{
       String applicationUrl = args.getString(0);
       String payload = args.getString(1);
-       JSONObject options;
+      JSONObject options;
       if(args.length() >= 2) {
         options = args.getJSONObject(2);
       } else {

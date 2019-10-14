@@ -172,6 +172,7 @@ public class DialDevice {
     }
   }
 
+
   public void launchApp(String appName, String launchData, String contentType, JSONObject options, Dial.LaunchAppCallback launchAppCallback){
     if(getApplicationUrl() != null){
       String appUrl = getApplicationUrl()+appName;

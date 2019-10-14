@@ -129,7 +129,7 @@ var launchHbbTVApp = function(enumId,options,onHbbTVLaunch){
         onHbbTVLaunch && onHbbTVLaunch.call(null,enumId,code);
     };
     var payload = createXmlLaunchRequest(options);
-    exec(success, error, "HbbTV", "launchHbbTVApp", [terminal.applicationUrl, payload]);
+    exec(success, error, "HbbTV", "launchHbbTVApp", [terminal.applicationUrl, payload, options]);
     return true;
 };
 

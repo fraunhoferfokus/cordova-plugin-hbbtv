@@ -144,6 +144,8 @@ var options = {
   region: $REGION$, // used for  <hbb:ParentalRating Region="$REGION$">. Default is an empty String
   appUrlBase: APP_URL_BASE, // used for <mhp:URLBase>$APP_URL_BASE$</mhp:URLBase>. Default is an empty String
   appLocation: APP_LOCATION, // used for <mhp:applicationLocation>$APP_LOCATION$</mhp:applicationLocation>. Default is an empty String
+  readTimeout: $READ_TIMEOUT$, // used for setting the read timeout when launching app. Default is 10000
+  connectTimeout: $CONNECT_TIMEOUT$ //used for setting the connect timeout when launching app. Default is 15000
 };
 hbbtvTerminalManager.launchHbbTVApp(enumId,options,function (enumId, errorCode) {
   if(errorCode){

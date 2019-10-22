@@ -66,11 +66,11 @@ public class HbbTV extends CordovaPlugin {
     try{
       String applicationUrl = args.getString(0);
       String payload = args.getString(1);
-      JSONObject options = args.getJSONObject(2);
+      
       DialDevice dialDevice = new DialDevice(applicationUrl);
-      dialDevice.launchApp("HbbTV", payload, "text/plain", options.has("timeout") ? options.getInt("timeout") : 10000, new Dial.LaunchAppCallback() {
+      Dial.LaunchAppCallback launchAppCallback = new Dial.LaunchAppCallback(){
         @Override
-        public void onLaunchApp(Integer statusCode) {
+        public void onLaunchApp(Integer statusCode){
           if(statusCode != null && statusCode>=200 && statusCode<300){
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK,statusCode));
           }
@@ -82,7 +82,19 @@ public class HbbTV extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR,status));
           }
         }
-      });
+      };
+
+      if(args.length() >= 2) {
+        JSONObject options = args.getJSONObject(2);
+        if(options.has("readTimeout") && options.has("connectTimeout")){
+          dialDevice.launchApp("HbbTV", payload, "text/plain", options, launchAppCallback);
+        }else{
+          dialDevice.launchApp("HbbTV", payload, "text/plain", launchAppCallback);
+        }
+      } else {
+        dialDevice.launchApp("HbbTV", payload, "text/plain", launchAppCallback);
+      }
+      
     }
     catch (Exception e){
       Log.e(TAG,e.getMessage(),e);

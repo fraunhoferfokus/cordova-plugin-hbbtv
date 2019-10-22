@@ -36,6 +36,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Executor;
 
+import org.json.JSONObject;
+
 import de.fhg.fokus.famium.hbbtv.ssdp.SsdpMessage;
 
 /**
@@ -170,10 +172,20 @@ public class DialDevice {
     }
   }
 
-  public void launchApp(String appName, String launchData, String contentType, int timeout, Dial.LaunchAppCallback launchAppCallback){
+  public void launchApp(String appName, String launchData, String contentType, JSONObject options, Dial.LaunchAppCallback launchAppCallback){
     if(getApplicationUrl() != null){
       String appUrl = getApplicationUrl()+appName;
-      new LaunchAppTask(launchAppCallback).executeOnExecutor(mExecutor, appUrl, launchData, contentType, Integer.toString(timeout));
+      new LaunchAppTask(launchAppCallback).executeOnExecutor(mExecutor, appUrl, launchData, contentType, options);
+    }
+  }
+
+  public void launchApp(String appName, String launchData, String contentType, Dial.LaunchAppCallback launchAppCallback) throws Exception{
+    if(getApplicationUrl() != null){
+      String appUrl = getApplicationUrl()+appName;
+      JSONObject options = new JSONObject();
+      options.put("readTimeout", 10000 /* milliseconds */);
+      options.put("connectTimeout", 15000 /* milliseconds */);
+      new LaunchAppTask(launchAppCallback).executeOnExecutor(mExecutor, appUrl, launchData, contentType, options);
     }
   }
 
@@ -360,7 +372,7 @@ public class DialDevice {
     }
   }
 
-  private class LaunchAppTask extends AsyncTask<String, Void, Integer> {
+  private class LaunchAppTask extends AsyncTask<Object, Void, Integer> {
     private String ns = null;
     private Dial.LaunchAppCallback mLaunchAppCallback;
 
@@ -373,13 +385,13 @@ public class DialDevice {
     }
 
     @Override
-    protected Integer doInBackground(String... params) {
+    protected Integer doInBackground(Object... params) {
       try {
-        String appUrl = params[0];
-        String launchData = params[1];
-        String contentType = params[2];
-        int timeout = Integer.parseInt(params[3]);
-        return postLaunchRequest(appUrl, launchData, contentType, timeout);
+        String appUrl = (String) params[0];
+        String launchData = (String) params[1];
+        String contentType = (String) params[2];
+        JSONObject options = (JSONObject) params[3];
+        return postLaunchRequest(appUrl, launchData, contentType, options);  
       } catch (Exception e) {
         Log.e(TAG, e.getMessage(), e);
         return null;
@@ -393,11 +405,11 @@ public class DialDevice {
       }
     }
 
-    private Integer postLaunchRequest(String appUrl, String launchData, String contentType, int timeout) throws IOException {
+    private Integer postLaunchRequest(String appUrl, String launchData, String contentType, JSONObject options) throws Exception {
       URL url = new URL(appUrl);
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setReadTimeout(timeout /* milliseconds */);
-      conn.setConnectTimeout(timeout /* milliseconds */);
+      conn.setReadTimeout(options.getInt("readTimeout"));
+      conn.setConnectTimeout(options.getInt("connectTimeout"));
       conn.setRequestMethod("POST");
       conn.setDoInput(true);
       conn.setDoOutput(true);
@@ -414,7 +426,7 @@ public class DialDevice {
       }
       conn.connect();
       return conn.getResponseCode();
-    }
+    } 
   }
 
   private class StopAppTask extends AsyncTask<String, Void, Integer> {
